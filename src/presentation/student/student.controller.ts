@@ -35,7 +35,38 @@ export class StudentController {
     getStudent = async (req: Request, res: Response) => {
         const { id } = req.params;
         
-        this.userService.findById(id!)  ///===================================================================!!!
+        this.userService.findById(id!) //= ======================================================= = ========================================= :p
+            .then((data) => res.status(200).json(data))
+            .catch((error: any) => {
+                const statusCode = error.statusCode || 500;
+                res.status(statusCode).json({ 
+                    message: error.message || "Internal Server Error" 
+                });
+            });
+    };
+
+    deleteStudent = async (req: Request, res: Response) => {  // Hard delete :3
+        const { id } = req.params;
+        
+        this.userService.deleteUser(id!)  //===============================================================================================
+            .then((data) => res.status(200).json(data))
+            .catch((error: any) => {
+                const statusCode = error.statusCode || 500;
+                res.status(statusCode).json({ 
+                    message: error.message || "Internal Server Error" 
+                });
+            });
+    };
+
+    updateStudentStatus = async (req: Request, res: Response) => {   // Soft delete : )
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (status === undefined) {
+            return res.status(422).json({ message: "Missing status field" });
+        }
+
+        this.userService.updateUserStatus(id!, status)  //= ====================================================================================
             .then((data) => res.status(200).json(data))
             .catch((error: any) => {
                 const statusCode = error.statusCode || 500;

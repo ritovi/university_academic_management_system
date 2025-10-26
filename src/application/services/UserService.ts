@@ -74,4 +74,35 @@ export class UserService {
             status: user.status
         }));
     }
+
+    async deleteUser(id: string) {
+        const user = await this.userRepository.findById(id);
+        
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+
+        await this.userRepository.delete(id);
+
+        return {
+            message: "User deleted successfully",
+            deletedUserId: id
+        };
+    }
+
+    async updateUserStatus(id: string, status: boolean) {
+        const user = await this.userRepository.findById(id);
+        
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+
+        await this.userRepository.update(id, { status });
+
+        return {
+            message: "User status updated successfully",
+            id,
+            status
+        };
+    }
 }

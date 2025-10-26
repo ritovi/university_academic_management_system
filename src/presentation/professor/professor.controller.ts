@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import  type { Request, Response } from "express";
 import { UserService } from "../../application/services/UserService.js";
 import { CreateUserDTO } from "../../application/dtos/CreateUserDTO.js";
 
@@ -32,10 +32,41 @@ export class ProfessorController {
             .catch(() => res.status(500).json({ message: "Error fetching professors" }));
     };
 
-    getProfessor = async (req: Request, res: Response) => {
+    getProfessor = async (req: Request, res: Response) => { 
         const { id } = req.params;
         
-        this.userService.findById(id!)  //===========================================================================================//
+        this.userService.findById(id!) //===========================================================================
+            .then((data) => res.status(200).json(data))
+            .catch((error: any) => {
+                const statusCode = error.statusCode || 500;
+                res.status(statusCode).json({ 
+                    message: error.message || "Internal Server Error" 
+                });
+            });
+    };
+
+    deleteProfessor = async (req: Request, res: Response) => { // Hard delete 
+        const { id } = req.params;
+        
+        this.userService.deleteUser(id!) //================================================================================
+            .then((data) => res.status(200).json(data))
+            .catch((error: any) => {
+                const statusCode = error.statusCode || 500;
+                res.status(statusCode).json({ 
+                    message: error.message || "Internal Server Error" 
+                });
+            });
+    };
+
+    updateProfessorStatus = async (req: Request, res: Response) => {  //Soft delete
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (status === undefined) {
+            return res.status(422).json({ message: "Missing status field" });
+        }
+
+        this.userService.updateUserStatus(id!, status) //=====================================================
             .then((data) => res.status(200).json(data))
             .catch((error: any) => {
                 const statusCode = error.statusCode || 500;

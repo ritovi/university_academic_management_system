@@ -18,6 +18,16 @@ export class ProfessorRoutes {
         );
         routes.get("/", authMiddleware.authenticate, professorController.getProfessors);
         routes.get("/:id", authMiddleware.authenticate, professorController.getProfessor);
+        routes.delete("/:id", 
+            authMiddleware.authenticate, 
+            authMiddleware.authorize("admin"), 
+            professorController.deleteProfessor
+        );
+        routes.patch("/:id/status", 
+            authMiddleware.authenticate, 
+            authMiddleware.authorize("admin"), 
+            professorController.updateProfessorStatus
+        );
 
         return routes;
     }

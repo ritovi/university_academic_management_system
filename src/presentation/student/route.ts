@@ -18,6 +18,16 @@ export class StudentRoutes {
         );
         routes.get("/", authMiddleware.authenticate, studentController.getStudents);
         routes.get("/:id", authMiddleware.authenticate, studentController.getStudent);
+        routes.delete("/:id", 
+            authMiddleware.authenticate, 
+            authMiddleware.authorize("admin"), 
+            studentController.deleteStudent
+        );
+        routes.patch("/:id/status", 
+            authMiddleware.authenticate, 
+            authMiddleware.authorize("admin"), 
+            studentController.updateStudentStatus
+        );
 
         return routes;
     }
