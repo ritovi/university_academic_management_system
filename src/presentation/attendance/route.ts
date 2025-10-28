@@ -8,7 +8,10 @@ export class AttendanceRoutes {
         const routes = Router();
         const container = DependencyContainer.getInstance();
         
-        const attendanceController = new AttendanceController(container.attendanceService);
+        const attendanceController = new AttendanceController(
+            container.attendanceService,
+            container.ipService
+        );
         const authMiddleware = new AuthMiddleware();
 
         // Mark attendance

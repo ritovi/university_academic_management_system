@@ -16,13 +16,19 @@ export enum ClassType {
     LAB = "lab"
 }
 
+export enum ClassMode {
+    IN_PERSON = "in_person",
+    REMOTE = "remote",
+    HYBRID = "hybrid"
+}
+
 @Entity("attendances")
 export class AttendanceEntity extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Column("uuid")
-    studentId: string ;
+    studentId: string;
 
     @ManyToOne(() => StudentEntity)
     @JoinColumn({ name: "studentId" })
@@ -40,7 +46,7 @@ export class AttendanceEntity extends BaseEntity {
 
     @ManyToOne(() => LabGroupEntity, { nullable: true })
     @JoinColumn({ name: "labGroupId" })
-    labGroup: LabGroupEntity;
+    labGroup: LabGroupEntity ;
 
     @Column("date")
     classDate: Date;
@@ -63,6 +69,12 @@ export class AttendanceEntity extends BaseEntity {
 
     @Column("int")
     weekNumber: number;
+
+    @Column("varchar", { length: 45 })
+    professorIpAddress: string;
+
+    @Column({ type: "enum", enum: ClassMode })
+    classMode: ClassMode;
 
     @Column("text", { nullable: true })
     notes: string;

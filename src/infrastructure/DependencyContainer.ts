@@ -11,6 +11,7 @@ import { LabReservationEntity } from "./postgres/entities/LabReservationEntity.j
 import { UserRepository } from "./postgres/repositories/UserRepository.js";
 import { PasswordHasher } from "./other/PasswordHasher.js";
 import { JWTService } from "./other/JWTService.js";
+import { IPService } from "./other/IPService.js";
 
 import { UserService } from "../application/services/UserService.js";
 import { AuthenticationService } from "../application/services/AuthenticationService.js";
@@ -29,6 +30,7 @@ export class DependencyContainer {
     public readonly userRepository: UserRepository;
     public readonly passwordHasher: PasswordHasher;
     public readonly jwtService: JWTService;
+    public readonly ipService: IPService;
     
     public readonly userService: UserService;
     public readonly authService: AuthenticationService;
@@ -56,6 +58,7 @@ export class DependencyContainer {
         this.userRepository = new UserRepository(userRepo);
         this.passwordHasher = new PasswordHasher();
         this.jwtService = new JWTService();
+        this.ipService = new IPService();
 
         // Application Services
         this.userService = new UserService(this.userRepository, this.passwordHasher);

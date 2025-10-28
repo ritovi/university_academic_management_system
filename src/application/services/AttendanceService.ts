@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { AttendanceEntity, AttendanceStatus } from "../../infrastructure/postgres/entities/AttendanceEntity.js";
+import { AttendanceEntity, AttendanceStatus, ClassMode } from "../../infrastructure/postgres/entities/AttendanceEntity.js";
 import { EnrollmentEntity } from "../../infrastructure/postgres/entities/EnrollmentEntity.js";
 import { CourseContentEntity } from "../../infrastructure/postgres/entities/CourseContentEntity.js";
 import { BulkMarkAttendanceDTO } from "../dtos/AttendanceDTO.js";
@@ -12,7 +12,7 @@ export class AttendanceService {
         private readonly courseContentRepository: Repository<CourseContentEntity>
     ) {}
 
-    async markBulkAttendance(dto: BulkMarkAttendanceDTO, professorId: string) {
+    async markBulkAttendance(dto: BulkMarkAttendanceDTO, professorId: string, ipAddress: string, classMode: ClassMode) {
         // Verify professor has authority to mark attendance
         const enrollments = await this.enrollmentRepository.find({
             where: { courseId: dto.courseId },
@@ -35,7 +35,9 @@ export class AttendanceService {
                 status: att.status,
                 markedBy: professorId,
                 markedAt: new Date(),
-                weekNumber: dto.weekNumber
+                weekNumber: dto.weekNumber,
+                professorIpAddress: ipAddress,
+                classMode: classMode
             });
 
             attendanceRecords.push(attendance);
@@ -48,11 +50,13 @@ export class AttendanceService {
 
         return {
             message: "Attendance marked successfully",
-            count: attendanceRecords.length
+            count: attendanceRecords.length,
+            classMode: classMode,
+            professorIP: ipAddress
         };
     }
 
-    async markAllAbsent(courseId: string, labGroupId: string | null, classDate: Date, classType: string, weekNumber: number, professorId: string) {
+    async markAllAbsent(courseId: string, labGroupId: string | null, classDate: Date, classType: string, weekNumber: number, professorId: string, ipAddress: string, classMode: ClassMode) {
         const enrollments = await this.enrollmentRepository.find({
             where: labGroupId ? { courseId, labGroupId } : { courseId }
         });
@@ -72,6 +76,8 @@ export class AttendanceService {
                 markedBy: professorId,
                 markedAt: new Date(),
                 weekNumber,
+                professorIpAddress: ipAddress,
+                classMode: classMode,
                 notes: "Marked absent - Professor did not arrive within 15 minutes"
             })
         );
@@ -80,7 +86,8 @@ export class AttendanceService {
 
         return {
             message: "All students marked absent",
-            count: attendanceRecords.length
+            count: attendanceRecords.length,
+            classMode: classMode
         };
     }
 
@@ -109,14 +116,28 @@ export class AttendanceService {
 
         const attendancePercentage = totalClasses > 0 ? (presentCount / totalClasses) * 100 : 0;
 
+        // Class mode statistics
+        const inPersonClasses = attendances.filter(a => a.classMode === ClassMode.IN_PERSON).length;
+        const remoteClasses = attendances.filter(a => a.classMode === ClassMode.REMOTE).length;
+
         return {
-            attendances,
+            attendances: attendances.map(a => ({
+                id: a.id,
+                classDate: a.classDate,
+                classType: a.classType,
+                status: a.status,
+                weekNumber: a.weekNumber,
+                classMode: a.classMode,
+                notes: a.notes
+            })),
             summary: {
                 totalClasses,
                 present: presentCount,
                 absent: absentCount,
                 late: lateCount,
-                attendancePercentage: attendancePercentage.toFixed(2)
+                attendancePercentage: attendancePercentage.toFixed(2),
+                inPersonClasses,
+                remoteClasses
             }
         };
     }
@@ -137,7 +158,9 @@ export class AttendanceService {
                     present: 0,
                     absent: 0,
                     late: 0,
-                    total: 0
+                    total: 0,
+                    inPersonClasses: 0,
+                    remoteClasses: 0
                 });
             }
 
@@ -146,6 +169,8 @@ export class AttendanceService {
             if (att.status === AttendanceStatus.PRESENT) stats.present++;
             if (att.status === AttendanceStatus.ABSENT) stats.absent++;
             if (att.status === AttendanceStatus.LATE) stats.late++;
+            if (att.classMode === ClassMode.IN_PERSON) stats.inPersonClasses++;
+            if (att.classMode === ClassMode.REMOTE) stats.remoteClasses++;
         }
 
         const report = Array.from(studentMap.values()).map(stats => ({
