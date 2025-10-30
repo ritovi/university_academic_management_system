@@ -3,7 +3,7 @@ import { axiosInstance, type CustomAxiosConfig } from './axios';
 import type { ApiErrorResponse } from './types';
 
 /**
- * Provides a base layer for making API calls using the configured Axios instance.
+ * Provides a base layer for making API calls using an Axios instance.
  * Includes centralized error handling.
  */
 export class ApiService {
@@ -13,15 +13,14 @@ export class ApiService {
 	 * @throws {Error} Throws a new Error with a user-friendly message.
 	 */
 	private static handleError(error: unknown): never {
-		// Handle network errors (offline) - Client-side only
+		// Handle network errors, client-side only
 		if (typeof navigator !== 'undefined' && !navigator.onLine) {
 			throw new Error('No internet connection. Please check your network and try again.');
 		}
 
-		// Check if it's an Axios error with a response from the server
 		if (axios.isAxiosError(error) && error.response) {
 			const status = error.response.status;
-			const errorData = error.response.data as Partial<ApiErrorResponse>; // Type assertion
+			const errorData = error.response.data as Partial<ApiErrorResponse>;
 
 			// Try to get a specific message from the backend response
 			const backendMessage = errorData?.message;
@@ -45,15 +44,12 @@ export class ApiService {
 					throw new Error(`Request failed with status ${status}. Please try again.`);
 			}
 		} else if (axios.isAxiosError(error) && error.request) {
-			// The request was made but no response was received (e.g., server down, network timeout)
 			console.error('API request error: No response received.', error.request);
 			throw new Error(
 				'Could not reach the server. Please check your connection or try again later.'
 			);
 		} else {
-			// 4. Something else happened in setting up the request or a non-Axios error
 			console.error('Unexpected error during API call setup:', error);
-			// Check if it's a generic Error object
 			if (error instanceof Error) {
 				throw new Error(`An unexpected error occurred: ${error.message}`);
 			}

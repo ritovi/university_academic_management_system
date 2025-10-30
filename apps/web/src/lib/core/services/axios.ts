@@ -48,28 +48,21 @@ axiosInstance.interceptors.response.use(
 		return response;
 	},
 	(error) => {
-		// Check if it's an Axios error with a response
 		if (axios.isAxiosError(error) && error.response) {
 			const config = error.config as CustomAxiosConfig;
 			if (error.response.status === 401 && !config._noAuthRedirect) {
-				// Unauthorized: Token is invalid, expired, or missing
 				console.error('Unauthorized (401). Token invalid or expired. Redirecting to login.');
-				// Remove the invalid token
 				localStorage.removeItem('authToken');
-				// Redirect to login page
 				if (typeof window !== 'undefined') {
 					window.location.href = '/login';
 				} else {
-					// Handle server-side context if necessary
 					console.warn('Cannot redirect on server-side for 401 error.');
 				}
 			}
 		} else {
-			// Handle network errors or other issues without a response object
 			console.error('Network error or unexpected issue:', error.message);
 		}
 
-		// Reject the promise so the error can be caught by ApiService.handleError
 		return Promise.reject(error);
 	}
 );

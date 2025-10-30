@@ -33,7 +33,7 @@
 		if (activeItem) {
 			parts.push({ title: activeItem.title, href: activeItem.url });
 		}
-		
+
 		return parts;
 	});
 </script>
