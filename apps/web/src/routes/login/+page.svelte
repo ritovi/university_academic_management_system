@@ -2,14 +2,13 @@
 	import LoginForm from '$lib/components/auth/LoginForm.svelte';
 	import userStore from '$lib/core/stores/user.store';
 	import { roleRedirect } from '$lib/core/utils/navigation';
-	import { Toaster } from 'svelte-sonner';
-	const user = $derived(userStore);
+	const user = $derived($userStore);
 
 	$effect(() => {
-  console.log(user);
+		console.log(user);
 		if (user && user.role) {
 			console.log('User is logged in, redirecting from /login...');
-      roleRedirect(user.role);
+			roleRedirect(user.role);
 		}
 	});
 </script>
@@ -23,4 +22,3 @@
 		<LoginForm />
 	</div>
 </div>
-<Toaster position="top-right" richColors />

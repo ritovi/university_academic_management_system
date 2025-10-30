@@ -8,13 +8,19 @@
 	import { browser } from '$app/environment';
 	import { AuthService } from '$lib/core/services';
 	import userStore from '$lib/core/stores/user.store';
+	import { roleRedirect } from '$lib/core/utils/navigation';
+	import { Toaster } from 'svelte-sonner';
 
 	let { children } = $props();
+	const user = $derived($userStore);
+
+	function handleLogout() {
+		userStore.logout();
+	}
 
 	$effect.pre(() => {
 		if (browser) {
 			const token = localStorage.getItem('authToken');
-
 			if (token) {
 				console.log('Restoring session from token...');
 				AuthService.getProfile()
@@ -37,13 +43,19 @@
 <div class="flex min-h-screen flex-col">
 	<Navbar>
 		{#snippet right()}
-			<Button href={resolve('/login')} variant="outline">Login</Button>
+			{#if user}
+				<Button onclick={handleLogout} variant="outline">Logout</Button>
+				<Button onclick={() => roleRedirect(user.role)} variant="outline">Dashboard</Button>
+			{:else}
+				<Button href={resolve('/login')} variant="outline">Login</Button>
+			{/if}
 		{/snippet}
 	</Navbar>
 
 	<main class="flex-1">
 		{@render children()}
 	</main>
+	<Toaster position="top-right" richColors />
 
 	<Footer />
 </div>
