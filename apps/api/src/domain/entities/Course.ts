@@ -25,7 +25,7 @@ export class Course extends Entity {
     ) {
         super(id);
 
-        if (!code?.trim()) throw new Error("code cannot be empty");
+        if (!code?.trim()) throw new Error("course code cannot be empty");
         if (!name?.trim()) throw new Error("name cannot be empty");
         if (credits <= 0) throw new Error("credits must be greater than zero");
         if (!theoryProfessorId?.trim())
