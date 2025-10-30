@@ -16,13 +16,13 @@
 	<Card.Content>
 		<Field.Group class="grid gap-6">
 			<Field.Field>
-				<Field.Label>Nombre</Field.Label>
-				<Input bind:value={data.name} placeholder="John" required />
+				<Field.Label>Nombres</Field.Label>
+				<Input bind:value={data.name} placeholder="John Joe" required />
 			</Field.Field>
 
 			<Field.Field>
-				<Field.Label>Apellido</Field.Label>
-				<Input bind:value={data.surname} placeholder="Doe" required />
+				<Field.Label>Apellidos</Field.Label>
+				<Input bind:value={data.surname} placeholder="Doe Parker" required />
 			</Field.Field>
 
 			<Field.Field>
