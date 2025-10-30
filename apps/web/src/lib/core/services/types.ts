@@ -18,7 +18,7 @@ export interface UserSummary {
 }
 
 // --- Users (Generic, Students, Professors) ---
-export type UserRole = 'student' | 'professor' | 'secretary' | 'admin';
+export type UserRole = 'student' | 'professor' | 'secretary' | 'admin' | '';
 
 export interface UserResponse {
 	id: string;
@@ -36,7 +36,7 @@ export interface CreateUserRequest {
 	password: string;
 	name: string;
 	surname: string;
-	birthdate: string; 
+	birthdate: string;
 	status?: boolean;
 }
 
@@ -424,5 +424,5 @@ export interface SuccessMessageResponse {
 export interface ApiErrorResponse {
 	message: string;
 	statusCode?: number;
-	details?: any;
+	details?: unknown;
 }
