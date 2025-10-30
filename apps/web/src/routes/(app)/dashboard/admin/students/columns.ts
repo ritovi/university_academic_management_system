@@ -9,14 +9,11 @@ const columnHelper = createColumnHelper<UserResponse>();
 
 export const columns = [
 	// Columna: Nombre Completo
-	columnHelper.accessor(
-		(row) => `${row.name ?? ''} ${row.surname ?? ''}`.trim(),
-		{
-			id: 'fullName',
-			header: 'Nombre Completo',
-			cell: (info) => info.getValue() || 'N/A' 
-		}
-	),
+	columnHelper.accessor((row) => `${row.name ?? ''} ${row.surname ?? ''}`.trim(), {
+		id: 'fullName',
+		header: 'Nombre Completo',
+		cell: (info) => info.getValue() || 'N/A'
+	}),
 
 	// Columna: Email
 	columnHelper.accessor('email', {

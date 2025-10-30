@@ -11,7 +11,7 @@
 	const studentsPromise = StudentService.getAllStudents();
 </script>
 
-<div class="flex justify-between items-center mb-4">
+<div class="mb-4 flex items-center justify-between">
 	<h1 class="text-2xl font-bold">Gestión de Estudiantes</h1>
 	<Button href={resolve('/dashboard/admin/students/new')}>
 		<Plus class="mr-2 h-4 w-4" />Agregar Estudiante
